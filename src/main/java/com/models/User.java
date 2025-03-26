@@ -6,6 +6,16 @@ public class User {
     private String password;
     private Role role;
 
+    public User(Long id, String username) {
+        this.id = id;
+        this.username = username;
+    }
+
+    public User() {
+
+    }
+
+
     // Геттеры и сеттеры
     public Long getId() {
         return id;

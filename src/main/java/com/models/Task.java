@@ -11,6 +11,20 @@ public class Task {
     private User assignee;  // Исполнитель
     private Long createdBy; // Создатель задачи
 
+    public Task(Long id, String title, String description, String status, LocalDateTime createdAt, User assignee, Long createdBy) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.status = status;
+        this.createdAt = createdAt;
+        this.assignee = assignee;
+        this.createdBy = createdBy;
+    }
+
+    public Task() {
+
+    }
+
     // Геттеры и сеттеры
     public Long getId() {
         return id;
