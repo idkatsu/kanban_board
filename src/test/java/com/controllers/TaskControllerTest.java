@@ -83,16 +83,23 @@ public class TaskControllerTest {
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("userId", userById);
 
+        Task task = new Task();
+        task.setTitle("New task");
+        task.setDescription("123");
+        task.setAssignee(assignee);
+        task.setCreatedBy(userById);
+
         mockMvc.perform(post("/home/create-card")
                         .param("title", "New task")
                         .param("description", "123")
-                        .param("assigneeId", assigneeId.toString())
+                        .param("assignee.id", assigneeId.toString())
                         .session(session))
                 .andExpect(redirectedUrl("/home"))
                 .andExpect(flash().attribute("message", "Задача успешно создана!"));
 
         Mockito.verify(taskDAO).save(Mockito.any(Task.class));
     }
+
 
     @Test
     public void updateStatus_ShouldUpdateStatusTaskAndRedirect() throws Exception {

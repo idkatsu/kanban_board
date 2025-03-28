@@ -3,12 +3,11 @@ package com.controllers;
 import com.dao.UserDAO;
 import com.models.User;
 import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/auth")
@@ -24,6 +23,7 @@ public class AuthController {
     // отображение страницы авторизации
     @GetMapping("/login")
     public String loginPage(Model model) {
+        model.addAttribute("user", new User());
         model.addAttribute("title", "Авторизация");
         return "auth/login";
     }
@@ -31,19 +31,18 @@ public class AuthController {
     // обработка формы авторизации
     @PostMapping("/login")
     public String login(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password,
+            @ModelAttribute("user") User user,
             HttpSession session,
-            Model model) {
+            RedirectAttributes redirectAttributes) {
 
-        User user = userDAO.findByUsername(username);
+        User existingUser = userDAO.findByUsername(user.getUsername());
 
-        if (user != null && userDAO.isValidUser(username, password)) {
-            session.setAttribute("userId", user.getId());
+        if (existingUser != null && userDAO.isValidUser(user.getUsername(), user.getPassword())) {
+            session.setAttribute("userId", existingUser.getId());
             return "redirect:/home";
         } else {
-            model.addAttribute("error", "Неверный логин или пароль");
-            return "auth/login";
+            redirectAttributes.addFlashAttribute("error", "Неверный логин или пароль");
+            return "redirect:/auth/login";
         }
     }
 
@@ -51,27 +50,22 @@ public class AuthController {
     @GetMapping("/register")
     public String registerPage(Model model) {
         model.addAttribute("user", new User());
-        model.addAttribute("title", "Регистрация");
         return "auth/register";
     }
 
     // обработка формы регистрации
     @PostMapping("/register")
     public String register(
-            @ModelAttribute("user") @Valid User user,
-            BindingResult bindingResult,
-            Model model) {
-
-        if (bindingResult.hasErrors()) {
-            return "auth/register";
-        }
+            @ModelAttribute("user") User user,
+            RedirectAttributes redirectAttributes) {
 
         if (userDAO.userExists(user.getUsername())) {
-            model.addAttribute("error", "Пользователь с таким логином уже существует");
-            return "auth/register";
+            redirectAttributes.addFlashAttribute("error", "Пользователь с таким логином уже существует");
+            return "redirect:/auth/register";
         }
 
         userDAO.registerUser(user);
+        redirectAttributes.addFlashAttribute("message", "Регистрация успешна! Войдите в систему.");
         return "redirect:/auth/login";
     }
 }

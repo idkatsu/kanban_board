@@ -44,9 +44,7 @@ public class TaskController {
     // Создание задачи
     @PostMapping("/create-card")
     public String createTask(
-            @RequestParam("title") String title,
-            @RequestParam("description") String description,
-            @RequestParam("assigneeId") Long assigneeId,
+            @ModelAttribute("task") Task task,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
@@ -57,14 +55,11 @@ public class TaskController {
             return "redirect:/auth/login";
         }
 
-        Task task = new Task();
-        task.setTitle(title);
-        task.setDescription(description);
         task.setCreatedAt(LocalDateTime.now());
         task.setStatus("OPEN");
         task.setCreatedBy(currentUserId);
 
-        User assignee = userDAO.findById(assigneeId);
+        User assignee = userDAO.findById(task.getAssignee().getId());
         if (assignee != null) {
             task.setAssignee(assignee);
         } else {

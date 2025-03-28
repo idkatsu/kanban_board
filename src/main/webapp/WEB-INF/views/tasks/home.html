@@ -93,18 +93,18 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form th:action="@{/home/create-card}" method="post">
+                <form th:action="@{/home/create-card}" method="post" th:object="${task}">
                     <div class="mb-3">
                         <label for="cardTitle" class="form-label">Заголовок</label>
-                        <input type="text" class="form-control" id="cardTitle" name="title" required>
+                        <input type="text" class="form-control" id="cardTitle" name="title" th:value="${title}" required>
                     </div>
                     <div class="mb-3">
                         <label for="cardDescription" class="form-label">Описание</label>
-                        <textarea class="form-control" id="cardDescription" name="description" rows="3" required></textarea>
+                        <textarea class="form-control" id="cardDescription" name="description" th:value="${description}" rows="3" required></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="cardAssignee" class="form-label">Исполнитель</label>
-                        <select class="form-select" id="cardAssignee" name="assigneeId" required>
+                        <select class="form-select" id="cardAssignee" name="assignee.id" required>
                             <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.username}"></option>
                         </select>
                     </div>
@@ -112,6 +112,7 @@
                         <button type="submit" class="btn btn-primary">Создать</button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>
